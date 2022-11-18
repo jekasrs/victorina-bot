@@ -43,11 +43,39 @@ def start_game(message):
         bot.register_next_step_handler(mes, next_question, i, currentSession, False)
 
 
+def timeout(currentSession):
+    waiting_list = currentSession.get_waiting_list()
+    for player_id in currentSession.players:
+        if currentSession.get_next_question(player_id) >= currentSession.number_of_questions:
+            continue
+
+        if player_id in waiting_list:
+            pass
+        else:
+            continue
+
+        currentSession.set_answer(player_id , currentSession.get_next_question(player_id), "")
+    
+        message = bot.send_message(player_id, "Время истекло, переходим к следующему вопросу")
+
+        battle = currentSession.questions[currentSession.get_next_question(player_id)]
+    
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        answ1 = types.KeyboardButton(text=battle.correct_answer)
+        answ2 = types.KeyboardButton(text=battle.incorrect_answers[0])
+        answ3 = types.KeyboardButton(text=battle.incorrect_answers[1])
+        answ4 = types.KeyboardButton(text=battle.incorrect_answers[2])
+    
+        markup.add(answ1, answ2, answ3, answ4)
+    
+        bot.send_message(player_id, battle.question, reply_markup=markup)
+        bot.register_next_step_handler(message, next_question, player_id, currentSession, True)
+
 def next_question(message, player_id, currentSession, flag):
 
     if flag:
         currentSession.set_answer(player_id , currentSession.get_next_question(player_id), message.text)
-        bot.send_message(player_id, "Ваш ответ принят, ждем остальных")
+        message = bot.send_message(player_id, "Ваш ответ принят, ждем остальных")
         while currentSession.get_n_waiting_to_answer > 0:
             pass
     
@@ -104,7 +132,7 @@ def create_game(message, res=False):
 
     else:
         num = get_next_free_number_of_room()
-        sessions.append(Session(message.chat.id, num))
+        sessions.append(Session(message.chat.id, num, ))
         bot.send_message(message.chat.id, "Твой код команты #" + str(num) +
                          "\n\nТеперь можешь поделиться кодом со своими друзьями и начинать квиз. ")
         configure_session(message)

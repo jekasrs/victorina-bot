@@ -2,6 +2,7 @@ import requests
 import json
 
 from Question import Question
+from threading import Timer
 
 
 class Session:
@@ -14,11 +15,21 @@ class Session:
         self.n_waiting_to_answer = 0
         self.set_theme("")  # время ответа на вопрос
 
+        self.timer
+
+        self.waiting_list = list()
         self.players = list()
         self.questions = list()
         self.answers = dict()
         self.players.append(new_admin_id)
         self.answers[str(new_admin_id)] = list()
+
+    def get_waiting_list(self):
+        return self.waiting_list
+    
+    def set_timer(self, timeout):
+        self.timer = Timer(10.0, timeout(self) )
+        self.timer.start()
 
     def set_new_player(self, player_id):
         if len(self.players) == self.number_of_players:
@@ -85,6 +96,8 @@ class Session:
             self.questions.append(q)
 
     def set_answer(self, player_id, question_id, answer):
+        self.waiting_list.remove(player_id)
+        self.timer.cancel()
         self.n_waiting_to_answer = self.n_waiting_to_answer  - 1
         if self.questions[question_id].correct_answer == answer:
             self.answers[str(player_id)].append(1)
@@ -96,6 +109,7 @@ class Session:
         return sum(self.answers[str(player_id)])
 
     def get_next_question(self, player_id):
+        self.waiting_list.append(player_id)
         self.n_waiting_to_answer = self.number_of_players
         return len(self.answers[str(player_id)])
 
