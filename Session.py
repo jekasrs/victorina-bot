@@ -11,6 +11,7 @@ class Session:
 
         self.number_of_players = 0  # кол-во игроков
         self.number_of_questions = 0  # кол-во вопросов
+        self.n_waiting_to_answer = 0
         self.set_theme("")  # время ответа на вопрос
 
         self.players = list()
@@ -45,8 +46,12 @@ class Session:
     def set_number_of_players(self, new_number_of_players):
         if new_number_of_players < 1:
             return
+        self.n_waiting_to_answer = new_number_of_players
         self.number_of_players = new_number_of_players
-
+        
+    def get_n_waiting_to_answer(self):
+        return self.n_waiting_to_answer
+    
     def get_number_of_questions(self):
         return self.number_of_players
 
@@ -80,6 +85,7 @@ class Session:
             self.questions.append(q)
 
     def set_answer(self, player_id, question_id, answer):
+        self.n_waiting_to_answer = self.n_waiting_to_answer  - 1
         if self.questions[question_id].correct_answer == answer:
             self.answers[str(player_id)].append(1)
         else:
@@ -90,5 +96,6 @@ class Session:
         return sum(self.answers[str(player_id)])
 
     def get_next_question(self, player_id):
+        self.n_waiting_to_answer = self.number_of_players
         return len(self.answers[str(player_id)])
 

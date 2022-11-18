@@ -47,7 +47,11 @@ def next_question(message, player_id, currentSession, flag):
 
     if flag:
         currentSession.set_answer(player_id , currentSession.get_next_question(player_id), message.text)
-
+        bot.send_message(player_id, "Ваш ответ принят, ждем остальных")
+        while currentSession.get_n_waiting_to_answer > 0:
+            pass
+    
+    
     if currentSession.get_next_question(player_id) >= currentSession.number_of_questions:
         bot.send_message(player_id, "Your score: " + str(currentSession.get_results(player_id)) + "/" + str(currentSession.number_of_questions))
         return
@@ -61,6 +65,7 @@ def next_question(message, player_id, currentSession, flag):
     answ4 = types.KeyboardButton(text=battle.incorrect_answers[2])
 
     markup.add(answ1, answ2, answ3, answ4)
+
     bot.send_message(player_id, battle.question, reply_markup=markup)
     bot.register_next_step_handler(message, next_question, player_id, currentSession, True)
 
