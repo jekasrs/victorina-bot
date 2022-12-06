@@ -10,7 +10,6 @@ bot = telebot.TeleBot('5593220196:AAG0qw4_B_ALDwMv2iWG0AW_pCRvn10CJE0')
 
 sessions = list()
 limit_of_sessions = 100
-last_generated_number = 0
 
 
 # Если не найдена, то возвращается None
@@ -30,11 +29,15 @@ def isAdmin(massage, currentSession):
 
 # можно ли создать еще команту
 def is_free_server():
+    global sessions
+    global limit_of_sessions
     return not len(sessions) >= limit_of_sessions
 
 
 # получение номера команты для админа
 def get_next_free_number_of_room():
+    global sessions
+    global limit_of_sessions
     all_n = []
     for i in sessions:
         all_n.append(i.room_id)
@@ -93,6 +96,7 @@ def start_game(message):
         currentSession.is_finished = False
         currentSession.init_questions()
 
+    currentSession.how_many_finished = len(currentSession.players)
     for i in currentSession.players:
         mes = bot.send_message(i, "Игра начинается!")
         next_question(mes, i, currentSession, False)
@@ -130,6 +134,7 @@ def create_game(message, res=False):
 # диспетчер настроек сессии
 @bot.callback_query_handler(func=lambda call: True)
 def callback_configure(call):
+    global sessions
     currentSession = findSessionById(call.message)
 
     if ((call.data == '1') or (call.data == '2') or (call.data == '3') or (call.data == '4')) and (
@@ -223,7 +228,6 @@ def choose_amount_questions(message):
 def read_number_of_room(message):
     if not message.text.isdigit():
         bot.send_message(message.chat.id, "Номер комнаты - число\nНажмите кнопку Войти или Создать")
-        # bot.register_next_step_handler(message, read_number_of_room)
         return
     number = message.text
     currentSession = None
@@ -233,11 +237,9 @@ def read_number_of_room(message):
             break
     if currentSession is None:
         bot.send_message(message.chat.id, "Такой комнаты не существует. Уточните номер у админа.\nНажмите кнопку Войти или Создать")
-        # bot.register_next_step_handler(message, read_number_of_room)
         return
     if len(currentSession.players) == currentSession.number_of_players:
         bot.send_message(message.chat.id, "Комната уже полностью заполненена. Создайте новую или выбирите другую.\nНажмите кнопку Войти или Создать")
-        # bot.register_next_step_handler(message, read_number_of_room)
         return
     currentSession.set_new_player(message.chat.id)
     bot.send_message(message.chat.id, "Вы подключились к комнате #" + str(currentSession.room_id) + "\nОжидайте начала игры. ")
@@ -250,8 +252,6 @@ def next_question(message, player_id, currentSession, flag):
 
     if currentSession.get_next_question(player_id) >= currentSession.number_of_questions:
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        key_create = types.KeyboardButton(text='Создать')
-        key_open = types.KeyboardButton(text='Войти')
         key_close = types.KeyboardButton(text='Завершить')
         key_start_session = types.KeyboardButton(text='Начать игру')
         currentSession.is_finished = True
@@ -264,8 +264,29 @@ def next_question(message, player_id, currentSession, flag):
         else:
             markup.add(key_close)
 
-        bot.send_message(player_id, "Your score: " + str(currentSession.get_results(player_id)) + "/" + str(
-            currentSession.number_of_questions), reply_markup=markup)
+        currentSession.how_many_finished = currentSession.how_many_finished-1
+        bot.send_message(player_id, "Ждём остальных...", reply_markup=markup)
+
+        if currentSession.how_many_finished == 0:
+            leaderBoard = str("Рейтинг игроков:\n")
+            for playerid in currentSession.get_players():
+                UsrInfo = bot.get_chat_member(playerid, playerid).user
+                if currentSession.get_results(playerid)/currentSession.number_of_questions < 0.2 :
+                    leaderBoard = leaderBoard + "\n💩 @" + str(UsrInfo.username) + " : " + str(currentSession.get_results(playerid)) + "/" + str(currentSession.number_of_questions)
+
+                elif currentSession.get_results(playerid)/currentSession.number_of_questions < 0.5 :
+                    leaderBoard = leaderBoard + "\n🧐️ @" + str(UsrInfo.username) + " : " + str(currentSession.get_results(playerid)) + "/" + str(currentSession.number_of_questions)
+
+                elif currentSession.get_results(playerid)/currentSession.number_of_questions == 0.5 :
+                    leaderBoard = leaderBoard + "️️\n⚖ @" + str(UsrInfo.username) + " : " + str(currentSession.get_results(playerid)) + "/" + str(currentSession.number_of_questions)
+
+                else:
+                    leaderBoard = leaderBoard + "️️\n🥇 @" + str(UsrInfo.username) + " : " + str(currentSession.get_results(playerid)) + "/" + str(currentSession.number_of_questions)
+
+            for playerid in currentSession.get_players():
+                bot.send_message(playerid, leaderBoard, reply_markup=markup)
+
+
 
         return
 

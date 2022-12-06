@@ -19,6 +19,13 @@ class Session:
         self.players.append(new_admin_id)
         self.answers[str(new_admin_id)] = list()
         self.is_finished = False
+        self.how_many_finished = 0
+
+    def set_how_many_finished(self):
+        self.how_many_finished = len(self.players)
+
+    def get_players(self):
+        return self.players
 
     def set_new_player(self, player_id):
         if len(self.players) == self.number_of_players:
