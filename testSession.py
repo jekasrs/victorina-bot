@@ -11,7 +11,7 @@ class TestSession(unittest.TestCase):
     def test_room_id(self):
         self.assertEqual(self.session.get_room_id(), 1)
     def test_get_next_free_number_of_room(self):
-        self.assertEqual(get_next_free_number_of_room(), 2)
+        self.assertEqual(self.get_next_free_number_of_room(), 2)
         
 # Executing the tests in the above test case class
 if __name__ == "__main__":
