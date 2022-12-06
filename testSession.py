@@ -12,10 +12,11 @@ class TestSession(unittest.TestCase):
     def test_room_id(self):
         self.assertEqual(self.session.get_room_id(), 1)
         
+    # admin + 2 players
     def test_get_number_of_players(self):
         self.session.set_new_player(1)
         self.session.set_new_player(2)
-        self.assertEqual(len(self.session.get_players()), 2)
+        self.assertEqual(len(self.session.get_players()), 3)
         
 # Executing the tests in the above test case class
 if __name__ == "__main__":
