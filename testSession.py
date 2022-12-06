@@ -5,7 +5,7 @@ from Session import Session
 class TestSession(unittest.TestCase):
     def setUp(self):
         self.session = Session(1,1)
-        self.sessions.append(session)
+        self.sessions.append(self.session)
     def test_admin_id(self):
         self.assertEqual(self.session.get_admin_id(), 1)
     def test_room_id(self):
