@@ -29,6 +29,8 @@ jobs:
         pip install flake8 pytest
         pip install pyTelegramBotAPI
         pip install random2
+        pip install requests
+        pip install json
 
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
