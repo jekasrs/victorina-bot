@@ -5,7 +5,7 @@ from Session import Session
 class TestSession(unittest.TestCase):
   #setUp method is overridden from the parent class TestCase
     def setUp(self):
-        self.session = Session(1,1)
+        self.session = Session(1,2)
   #Each test method starts with the keyword test_
     def test_admin_id(self):
         self.assertEqual(self.session.get_admin_id(), 1)
