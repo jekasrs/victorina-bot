@@ -25,8 +25,7 @@ class Session:
             return
         self.players.append(player_id)
         self.answers[str(player_id)] = list()
-        print(len(list()))
-        print(len(self.answers[str(player_id)]))
+
 
     def get_admin_id(self):
         return self.admin_id
