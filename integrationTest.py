@@ -1,5 +1,4 @@
 import asyncio
-from pathlib import Path
 
 from pyrogram import Client
 
@@ -8,12 +7,7 @@ from tgintegration import Response
 
 # Target chat. Can also be a list of multiple chat ids/usernames
 TARGET = "party_victorina_bot"
-clicked = 11
-
-# This example uses the configuration of `config.ini` (see examples/README)
-examples_dir = Path(__file__).parent.parent.absolute()
 SESSION_NAME: str = "tgintegration_examples"
-
 
 # This example uses the configuration of `config.ini` (see examples/README)
 def create_client(session_name: str = SESSION_NAME) -> Client:
