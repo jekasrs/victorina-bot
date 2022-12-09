@@ -131,29 +131,31 @@ def create_game(message, res=False):
         configure_session(message)
 
 
-# диспетчер настроек сессии
-@bot.callback_query_handler(func=lambda call: True)
-def callback_configure(call):
-    global sessions
-    currentSession = findSessionById(call.message)
 
-    if ((call.data == '1') or (call.data == '2') or (call.data == '3') or (call.data == '4')) and (
-            currentSession.number_of_players == 0):
-        currentSession.number_of_players = int(call.data)
-        call.data = ''
-        choose_theme(call.message)
 
-    elif ((call.data == 'arts_and_literature') or (call.data == 'film_and_tv') or (call.data == 'food_and_drink') or (
-            call.data == 'general_knowledge')) and (currentSession.theme == ""):
-        currentSession.theme = call.data
-        call.data = ''
-        choose_amount_questions(call.message)
-
-    elif ((call.data == '10') or (call.data == '20')) and (currentSession.number_of_questions == 0):
-        currentSession.number_of_questions = int(call.data)
-        currentSession.init_questions()
-        call.data = ''
-        start(call.message)
+# # диспетчер настроек сессии
+# @bot.callback_query_handler(func=lambda call: True)
+# def callback_configure(call):
+#     global sessions
+#     currentSession = findSessionById(call.message)
+#
+#     if ((call.data == '1') or (call.data == '2') or (call.data == '3') or (call.data == '4')) and (
+#             currentSession.number_of_players == 0):
+#         currentSession.number_of_players = int(call.data)
+#         call.data = ''
+#         bot.register_next_step_handler(call.message, choose_theme)
+#
+#     elif ((call.data == 'arts_and_literature') or (call.data == 'film_and_tv') or (call.data == 'food_and_drink') or (
+#             call.data == 'general_knowledge')) and (currentSession.theme == ""):
+#         currentSession.theme = call.data
+#         call.data = ''
+#         bot.register_next_step_handler(call.message, choose_amount_questions)
+#
+#     elif ((call.data == '10') or (call.data == '20')) and (currentSession.number_of_questions == 0):
+#         currentSession.number_of_questions = int(call.data)
+#         currentSession.init_questions()
+#         call.data = ''
+#         bot.register_next_step_handler(call.message, start)
 
 
 # вход в команту
@@ -188,40 +190,26 @@ def close_game(message, res=False):
 # оповещение о ночале конфигурации
 def configure_session(message):
     bot.send_message(message.chat.id, "Начнем конфигурацию...", reply_markup=telebot.types.ReplyKeyboardRemove())
-    choose_number_players(message)
+    bot.send_message(message.chat.id, "Настройка 1/3: Кол-во игроков")
+    bot.register_next_step_handler(message, read_number_of_players)
 
+def read_number_of_players(message):
+    currentSession = findSessionById(message)
+    currentSession.number_of_players = int(message.text)
+    bot.send_message(message.chat.id, "Настройка 2/3: Тема")
+    bot.register_next_step_handler(message, read_theme)
 
-# выбор максимального кол-ва игроков
-def choose_number_players(message):
-    markup = types.InlineKeyboardMarkup()
-    key_one = types.InlineKeyboardButton(text='1', callback_data='1')
-    key_two = types.InlineKeyboardButton(text='2', callback_data='2')
-    key_three = types.InlineKeyboardButton(text='3', callback_data='3')
-    key_four = types.InlineKeyboardButton(text='4', callback_data='4')
-    markup.add(key_one, key_two, key_three, key_four)
-    bot.send_message(message.chat.id, "Настройка 1/3: Кол-во игроков", reply_markup=markup)
+def read_theme(message):
+    currentSession = findSessionById(message)
+    currentSession.set_theme(message.text)
+    bot.send_message(message.chat.id, "Настройка 3/3: Кол-во вопросов")
+    bot.register_next_step_handler(message, read_number_of_question)
 
-
-# выбор темы викторины
-def choose_theme(message):
-    markup = types.InlineKeyboardMarkup()
-    key_math = types.InlineKeyboardButton(text='Arts & Literature', callback_data='arts_and_literature')
-    key_english = types.InlineKeyboardButton(text='Film & TV', callback_data='film_and_tv')
-    key_java = types.InlineKeyboardButton(text='Food & Drink', callback_data='food_and_drink')
-    key_gen = types.InlineKeyboardButton(text='General Knowledge', callback_data='general_knowledge')
-
-    markup.add(key_math, key_english, key_java, key_gen)
-    bot.send_message(message.chat.id, "Настройка 2/3: Тема", reply_markup=markup)
-
-
-# выбор кол-во вопросов в викторине
-def choose_amount_questions(message):
-    markup = types.InlineKeyboardMarkup()
-    key_10 = types.InlineKeyboardButton(text='10', callback_data='10')
-    key_20 = types.InlineKeyboardButton(text='20', callback_data='20')
-
-    markup.add(key_10, key_20)
-    bot.send_message(message.chat.id, "Настройка 3/3: Кол-во вопросов", reply_markup=markup)
+def read_number_of_question(message):
+    currentSession = findSessionById(message)
+    currentSession.number_of_questions = int(message.text)
+    currentSession.init_questions()
+    start(message)
 
 
 # попытка добавить игрока в команту
