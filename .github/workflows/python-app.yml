@@ -27,7 +27,7 @@ jobs:
         python -m pip install requests
         pip install pyrogram
         pip install asyncio
-        pip install tgintegration --upgrad
+        pip install tgintegration
         
   job_test_unit:
     name: Unit Test
