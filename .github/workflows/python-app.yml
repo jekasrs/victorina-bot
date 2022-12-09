@@ -1,6 +1,3 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Python application
 
 on:
@@ -13,7 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  job_build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -27,12 +25,9 @@ jobs:
         pip install flake8 pytest
         pip install pyTelegramBotAPI
         python -m pip install requests
-
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-#     - name: Test get/set
-#       run: 
-#         python testSession.py
-  test:
+        
+  job_test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
     - uses: action/checkout@v3
