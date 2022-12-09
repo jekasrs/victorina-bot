@@ -30,6 +30,7 @@ jobs:
         pip install tgintegration
         
   job_test_unit:
+    needs: job_build
     name: Unit Test
     runs-on: ubuntu-latest
     steps:
@@ -39,6 +40,7 @@ jobs:
         python testSession.py
         
   job_test_integration:
+    needs: job_build
     name: Integration Test
     runs-on: ubuntu-latest
     steps:
