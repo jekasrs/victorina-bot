@@ -25,6 +25,9 @@ jobs:
         pip install flake8 pytest
         pip install pyTelegramBotAPI
         python -m pip install requests
+        pip install pyrogram
+        pip install asyncio
+        pip install tgintegration --upgrad
         
   job_test_unit:
     name: Unit Test
