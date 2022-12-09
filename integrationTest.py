@@ -1,200 +1,114 @@
-from pyrogram import Client, filters
-
-
 import asyncio
+from pathlib import Path
 
-api_id = 28963375
-api_hash = "8b17f5707d7a743f8d08c4bc2772bdd2"
+from pyrogram import Client
 
-app = Client("my_account", api_id=api_id, api_hash=api_hash)
-
-
-# queries = 12
-# setup = 9
+from tgintegration import BotController
+from tgintegration import Response
 
 # Target chat. Can also be a list of multiple chat ids/usernames
 TARGET = "party_victorina_bot"
+clicked = 11
+
+# This example uses the configuration of `config.ini` (see examples/README)
+examples_dir = Path(__file__).parent.parent.absolute()
+SESSION_NAME: str = "tgintegration_examples"
 
 
-
-
-
-# Filter in only new_chat_members updates generated in TARGET chat
-@app.on_message(filters.chat(TARGET) & filters.new_chat_members )
-async def welcome(client, message):
-
-    await client.request_callback_answer(
-        chat_id=message.chat.id,
-        message_id=message.id,
-        callback_data=1
+# This example uses the configuration of `config.ini` (see examples/README)
+def create_client(session_name: str = SESSION_NAME) -> Client:
+    return Client(
+        "my_account",
+        api_id=28543768,
+        api_hash="021b8f94f5539ee31218a0adb5adcf6f"
     )
 
 
+async def run_example(client: Client):
+    controller = BotController(
+        peer="@party_victorina_bot",  # We are going to run tests on https://t.me/BotListBot
+        client=client,
+        max_wait=20,  # Maximum timeout for responses (optional)
+        wait_consecutive=20,  # Minimum time to wait for more/consecutive messages (optional)
+        raise_no_response=True,  # Raise `InvalidResponseError` when no response received (defaults to True)
+        global_action_delay=2.5,  # Choosing a rather high delay so we can follow along in realtime (optional)
+    )
 
-async def main():
-    async with app:
-        # Send a message, Markdown is enabled by default
-        await app.send_message("party_victorina_bot", "/start")
-        await asyncio.sleep(3)
-        await app.send_message("party_victorina_bot", "Создать")
-        await asyncio.sleep(3)
-        await app.send_message("party_victorina_bot", "1")
-        
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        await asyncio.sleep(3)
-        
-        
-        # await app.send_message("party_victorina_bot", "1")
-        # await asyncio.sleep(3)
-        # await app.send_message("party_victorina_bot", "Film & TV")
-        # await asyncio.sleep(3)
-        # await app.send_message("party_victorina_bot", "10")
-        # await asyncio.sleep(3)
-        # await app.send_message("party_victorina_bot", "Начать игру")
-        # await asyncio.sleep(3)
+    print("Clearing chat to start with a blank screen...")
+    await controller.clear_chat()
+
+    print("Sending /start and waiting for exactly 3 messages...")
+    async with controller.collect(count=1) as response:  # type: Response
+        await controller.send_command("/start ")
+
+    async with controller.collect(count=3) as response:  # type: Response
+        await client.send_message(controller.peer_id, "Создать")
+
+    async with controller.collect(count=1) as response:  # type: Response
+        await client.send_message(controller.peer_id, "1")
+
+    async with controller.collect(count=1) as response:  # type: Response
+        await client.send_message(controller.peer_id, "Films & TV")
+
+    async with controller.collect(count=1) as response:  # type: Response
+        await client.send_message(controller.peer_id, "10")
+
+    async with controller.collect(count=1) as response:  # type: Response
+        await controller.send_command("/beginGame ")
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    await asyncio.sleep(3)
+    keyboard = response.messages[0]
+    async with controller.collect(count=1) as response:  # type: Response
+        await keyboard.click(0, 0)
+
+    assert response.messages[0].text == 'Ждём остальных...'
+    print("Success!")
 
 
-
-
-app.run(main())
-
-
-
-# with TelegramClient(StringSession(), api_id, api_hash) as client:
-#     print("Session string:", client.session.save())
-#     client.send_message("/start", client.session.save())
-#     results = await client.inline_query('like', 'Do you like Telethon?')
-#     message = await results[0].click(0)
-
-#     client.send_message("Создать", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("Film & TV", client.session.save())
-    
-#     client.send_message("10", client.session.save())
-#     client.send_message("Начать игру", client.session.save())
-#     client.send_message("1", client.session.save())
-#     messages = client.get_messages('GOOGLE')
-    
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-#     client.send_message("1", client.session.save())
-
-
-
-# from telethon import TelegramClient, events, sync, utils
-
-# api_id = "5593220196"
-# api_hash = "AAG0qw4_B_ALDwMv2iWG0AW_pCRvn10CJE0"
-
-# client = TelegramClient('session', api_id, api_hash)
-# client.start()
-
-
-# wwr = client.get_entity('party_victorina_bot')
-# print(wwr)
-
-
-# @client.on(events.NewMessage(from_users=wwr))
-# async def handler(event):
-#     buttons = await event.get_buttons()
-#     for bline in buttons:
-#         for button in bline:
-#             print(button.button.text)
-#             if 'Паззл' in button.button.text:
-#                 await button.click()
-
-# try:
-#     print('(Press Ctrl+C to stop this)')
-#     client.run_until_disconnected()
-# finally:
-#     client.disconnect()
+if __name__ == "__main__":
+    asyncio.get_event_loop().run_until_complete(run_example(create_client()))
