@@ -26,11 +26,20 @@ jobs:
         pip install pyTelegramBotAPI
         python -m pip install requests
         
-  job_test:
-    name: Test
+  job_test_unit:
+    name: Unit Test
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Test get/set
       run: 
         python testSession.py
+        
+  job_test_integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Test of one-player case
+      run: 
+        python integrationTest.py
