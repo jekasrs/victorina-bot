@@ -51,7 +51,7 @@ Container diagram:
 ### 4 Этап  
 **Исходный код**  
 **Используемые технологии**
-Для CI используются Github Actions, yaml скрипты: тестов, сборки и деплоя можно посмотреть в .github/workflows
+Для CI используются GitHub Actions, yaml скрипты: тестов, сборки и деплоя можно посмотреть в .github/workflows
 
 ***
 
