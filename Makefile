@@ -12,6 +12,6 @@ test: # Integration test
 	python -m integrationTest
 
 clean:
-	killall main.py
+	pkill python
 	rm -r __pycache__
 	rm my_account.session

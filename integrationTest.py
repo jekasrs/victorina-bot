@@ -47,7 +47,7 @@ async def run_example(client: Client):
     async with controller.collect(count=1) as response:  # type: Response
         await client.send_message(controller.peer_id, "10")
 
-    async with controller.collect(count=1) as response:  # type: Response
+    async with controller.collect(count=2) as response:  # type: Response
         await controller.send_command("/beginGame ")
 
     await asyncio.sleep(3)
