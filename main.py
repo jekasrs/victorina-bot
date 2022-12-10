@@ -112,8 +112,8 @@ def dispatcher_of_actions(message):
         close_game(message)
     if message.text == 'Начать игру':
         start_game(message)
-    else:
-        bot.send_message(message.chat.id, "Неверная команда")
+    #else:
+    #    bot.send_message(message.chat.id, "Неверная команда")
         
 
 
@@ -193,17 +193,20 @@ def close_game(message, res=False):
 # оповещение о ночале конфигурации
 def configure_session(message):
     bot.send_message(message.chat.id, "Начнем конфигурацию...", reply_markup=telebot.types.ReplyKeyboardRemove())
-    bot.send_message(message.chat.id, "Настройка 1/3: Кол-во игроков")
+    bot.send_message(message.chat.id, "Настройка 1/3: Кол-во игроков (от 1 до 3)")
     bot.register_next_step_handler(message, read_number_of_players)
 
 def read_number_of_players(message):
-    if message.text != "1" or message.text != "2"  or message.text != "3":
+    if str(message.text) == str('1') or str(message.text) == str('2') or str(message.text) == str('3'):
+        currentSession = findSessionById(message)
+        currentSession.number_of_players = int(message.text)
+        bot.send_message(message.chat.id, "Настройка 2/3: Тема")
+        bot.register_next_step_handler(message, read_theme)
+
+    else:
         bot.send_message(message.chat.id, "Вы должны ввести число от 1 до 3 \n")
+        configure_session(message)
         return
-    currentSession = findSessionById(message)
-    currentSession.number_of_players = int(message.text)
-    bot.send_message(message.chat.id, "Настройка 2/3: Тема")
-    bot.register_next_step_handler(message, read_theme)
 
 def read_theme(message):
     currentSession = findSessionById(message)
@@ -212,13 +215,18 @@ def read_theme(message):
     bot.register_next_step_handler(message, read_number_of_question)
 
 def read_number_of_question(message):
-    if message.text != "10" or message.text != "20":
-        bot.send_message(message.chat.id, "Вы должны ввести 10 или 20 \n")
+    if str(message.text) == str('10') or str(message.text) == str('20'):
+        currentSession = findSessionById(message)
+        currentSession.number_of_questions = int(message.text)
+        currentSession.init_questions()
+        start(message)
+
+    else:
+        bot.send_message(message.chat.id, "Настройка 3/3: Кол-во вопросов (10 или 20)")
+        bot.register_next_step_handler(message, read_number_of_question)
         return
-    currentSession = findSessionById(message)
-    currentSession.number_of_questions = int(message.text)
-    currentSession.init_questions()
-    start(message)
+
+
 
 
 # попытка добавить игрока в команту
