@@ -11,7 +11,6 @@ bot = telebot.TeleBot('5593220196:AAG0qw4_B_ALDwMv2iWG0AW_pCRvn10CJE0')
 sessions = list()
 limit_of_sessions = 100
 
-
 # Если не найдена, то возвращается None
 def findSessionById(message):
     global sessions
@@ -22,17 +21,14 @@ def findSessionById(message):
             break
     return currentSession
 
-
 def isAdmin(massage, currentSession):
     return massage.chat.id == currentSession.get_admin_id()
-
 
 # можно ли создать еще команту
 def is_free_server():
     global sessions
     global limit_of_sessions
     return not len(sessions) >= limit_of_sessions
-
 
 # получение номера команты для админа
 def get_next_free_number_of_room():
@@ -45,7 +41,6 @@ def get_next_free_number_of_room():
     for i in range(1, limit_of_sessions + 1):
         if not all_n.__contains__(i):
             return i
-
 
 # GENERAL
 @bot.message_handler(commands=['start', 'help'])
@@ -81,7 +76,6 @@ def start(message, res=False):
 
     bot.send_message(message.chat.id, mes, reply_markup=markup)
 
-
 # Запуск игры: старт сессии
 @bot.message_handler(commands=["beginGame"])
 def start_game(message):
@@ -101,7 +95,6 @@ def start_game(message):
         mes = bot.send_message(i, "Игра начинается!")
         next_question(mes, i, currentSession, False)
 
-
 @bot.message_handler(content_types=['text'])
 def dispatcher_of_actions(message):
     if message.text == 'Создать':
@@ -112,11 +105,7 @@ def dispatcher_of_actions(message):
         close_game(message)
     if message.text == 'Начать игру':
         start_game(message)
-    #else:
-    #    bot.send_message(message.chat.id, "Неверная команда")
         
-
-
 # создание игры, бронирование номера и запуск процесса конфигурации
 @bot.message_handler(commands=["createGame"])
 def create_game(message, res=False):
@@ -133,40 +122,11 @@ def create_game(message, res=False):
                          "\n\nТеперь можешь поделиться кодом со своими друзьями и начинать квиз. ")
         configure_session(message)
 
-
-
-
-# # диспетчер настроек сессии
-# @bot.callback_query_handler(func=lambda call: True)
-# def callback_configure(call):
-#     global sessions
-#     currentSession = findSessionById(call.message)
-#
-#     if ((call.data == '1') or (call.data == '2') or (call.data == '3') or (call.data == '4')) and (
-#             currentSession.number_of_players == 0):
-#         currentSession.number_of_players = int(call.data)
-#         call.data = ''
-#         bot.register_next_step_handler(call.message, choose_theme)
-#
-#     elif ((call.data == 'arts_and_literature') or (call.data == 'film_and_tv') or (call.data == 'food_and_drink') or (
-#             call.data == 'general_knowledge')) and (currentSession.theme == ""):
-#         currentSession.theme = call.data
-#         call.data = ''
-#         bot.register_next_step_handler(call.message, choose_amount_questions)
-#
-#     elif ((call.data == '10') or (call.data == '20')) and (currentSession.number_of_questions == 0):
-#         currentSession.number_of_questions = int(call.data)
-#         currentSession.init_questions()
-#         call.data = ''
-#         bot.register_next_step_handler(call.message, start)
-
-
 # вход в команту
 @bot.message_handler(commands=["enterGame"])
 def enter_game(message, res=False):
     bot.send_message(message.chat.id, "Напиши код комнаты")
     bot.register_next_step_handler(message, read_number_of_room)
-
 
 # выход из команты
 @bot.message_handler(commands=["closeGame"])
@@ -188,7 +148,6 @@ def close_game(message, res=False):
     else:
         currentSession.players.remove(message.chat.id)
         bot.send_message(message.chat.id, "Выход из команты. Пока...", reply_markup=markup)
-
 
 # оповещение о ночале конфигурации
 def configure_session(message):
@@ -226,9 +185,6 @@ def read_number_of_question(message):
         bot.register_next_step_handler(message, read_number_of_question)
         return
 
-
-
-
 # попытка добавить игрока в команту
 def read_number_of_room(message):
     if not message.text.isdigit():
@@ -248,7 +204,6 @@ def read_number_of_room(message):
         return
     currentSession.set_new_player(message.chat.id)
     bot.send_message(message.chat.id, "Вы подключились к комнате #" + str(currentSession.room_id) + "\nОжидайте начала игры. ")
-
 
 # следующий ход
 def next_question(message, player_id, currentSession, flag):
@@ -291,8 +246,6 @@ def next_question(message, player_id, currentSession, flag):
             for playerid in currentSession.get_players():
                 bot.send_message(playerid, leaderBoard, reply_markup=markup)
 
-
-
         return
 
     battle = currentSession.questions[currentSession.get_next_question(player_id)]
@@ -313,6 +266,5 @@ def next_question(message, player_id, currentSession, flag):
     markup.add(answ1, answ2, answ3, answ4)
     bot.send_message(player_id, battle.question, reply_markup=markup)
     bot.register_next_step_handler(message, next_question, player_id, currentSession, True)
-
 
 bot.polling(none_stop=True, interval=0)
