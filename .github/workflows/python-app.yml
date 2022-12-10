@@ -41,7 +41,7 @@ jobs:
         python testSession.py
 
   job_3: 
-    name: Start Server
+    name: Integration test
     needs: [job_1, job_2]
     runs-on: ubuntu-latest
     steps:
