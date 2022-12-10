@@ -1,16 +1,14 @@
-deps:
-	python -m pip install pyTelegramBotAPI telebotapi TelegramBotAPI pyrogram asyncio tgintegration
+#deps:
+#	python -m pip install pyTelegramBotAPI telebotapi TelegramBotAPI pyrogram asyncio tgintegration
+.PHONY: all run test clean 
 
-pull:
-	git pull
-
-test: # Unit test
-	python -m testSession
+all: run test 
 
 run:
 	python main.py &
 
 test: # Integration test
+	python -m testSession
 	python -m integrationTest
 
 clean:
