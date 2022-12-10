@@ -50,15 +50,19 @@ Container diagram:
 
 ### 4 Этап  
 **Исходный код**  
-**Используемые технологии**
-Для CI используются GitHub Actions, yaml скрипты: тестов, сборки и деплоя можно посмотреть в .github/workflows
+Весь функционал для взаимодествия с ботом находится в файле [main.py](https://github.com/jekasrs/victorina-bot/blob/main/main.py)
+Также созданы два класса [Session.py](https://github.com/jekasrs/victorina-bot/blob/main/Session.py) и [Question.py](https://github.com/jekasrs/victorina-bot/blob/main/Question.py) с говорящими названиями.  
+В unit тестирование проверяются методы get/set в файле [testSession.py](https://github.com/jekasrs/victorina-bot/blob/main/testSession.py)
+Интеграционный тест основанный на пользовательской истории, когда игрок играет один находится в файле [integrationTest.py](https://github.com/jekasrs/victorina-bot/blob/main/integrationTest.py)
 
+**Используемые технологии**  
+Для получения вопросов используется бесплатный API https://the-trivia-api.com.  
+Основа приложения строится на питоне и соответсвующей библиотеки для питона Telegram Bot API.  
+Unit тестирование проводится с помощью питон библиотеки unittest.  
+Integration тестирование реализовано с помощью makefile и библиотеки tgintegration.  
 ***
 
 ### 5 Этап   
-**Unit тесты**  
-
-***
-
-### 6 Этап  
-**CI**
+**CI**  
+Сборка, тесты, интеграционный тест и запуск приложения выполняются командой  
+> make && make clean 
