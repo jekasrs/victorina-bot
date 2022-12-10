@@ -58,14 +58,5 @@ jobs:
         pip install tgintegration
     - name: Start execution
       run: 
-        python main.py
-        
-  job_4: 
-    name: Integration Test
-    needs: job_3
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - name: Test of one-player case
-      run: 
+        python main.py &
         python integrationTest.py
