@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 jobs:
-  job_build:
-    name: Build
+  job_1:
+    name: BuildPackage
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -22,38 +22,38 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest
-        pip install pyTelegramBotAPI
         python -m pip install requests
+        pip install pyTelegramBotAPI
         pip install pyrogram
         pip install asyncio
         pip install tgintegration
         
-  job_test_unit:
-    needs: job_build
-    name: Unit Test
+  job_2: 
+    name: UnitTest
+    needs: job_1
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Test get/set
       run: 
         python testSession.py
-        
-  job_test_integration:
-    needs: job_build
-    name: Integration Test
+
+  job_3: 
+    name: Start Server
+    needs: [job_1, job_2]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        pip install pyTelegramBotAPI
-        python -m pip install requests
-        pip install pyrogram
-        pip install asyncio
-        pip install tgintegration
+    - name: Start execution
+      run: 
+        python main.py
+        
+  job_4: 
+    name: Integration Test
+    needs: job_3
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
     - name: Test of one-player case
       run: 
         python integrationTest.py
