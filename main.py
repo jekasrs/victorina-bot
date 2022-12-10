@@ -197,7 +197,7 @@ def configure_session(message):
     bot.register_next_step_handler(message, read_number_of_players)
 
 def read_number_of_players(message):
-    if not message.text.isdigit() and int(message.text) > 0 and int(message.text) < 3:
+    if message.text != "1" or message.text != "2"  or message.text != "3":
         bot.send_message(message.chat.id, "Вы должны ввести число от 1 до 3 \n")
         return
     currentSession = findSessionById(message)
