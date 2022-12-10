@@ -112,6 +112,9 @@ def dispatcher_of_actions(message):
         close_game(message)
     if message.text == 'Начать игру':
         start_game(message)
+    else:
+        bot.send_message(message.chat.id, "Неверная команда")
+        
 
 
 # создание игры, бронирование номера и запуск процесса конфигурации
@@ -194,6 +197,9 @@ def configure_session(message):
     bot.register_next_step_handler(message, read_number_of_players)
 
 def read_number_of_players(message):
+    if not message.text.isdigit() and int(message.text) > 0 and int(message.text) < 3:
+        bot.send_message(message.chat.id, "Вы должны ввести число от 1 до 3 \n")
+        return
     currentSession = findSessionById(message)
     currentSession.number_of_players = int(message.text)
     bot.send_message(message.chat.id, "Настройка 2/3: Тема")
@@ -202,10 +208,13 @@ def read_number_of_players(message):
 def read_theme(message):
     currentSession = findSessionById(message)
     currentSession.set_theme(message.text)
-    bot.send_message(message.chat.id, "Настройка 3/3: Кол-во вопросов")
+    bot.send_message(message.chat.id, "Настройка 3/3: Кол-во вопросов (10 или 20)")
     bot.register_next_step_handler(message, read_number_of_question)
 
 def read_number_of_question(message):
+    if message.text != "10" or message.text != "20":
+        bot.send_message(message.chat.id, "Вы должны ввести 10 или 20 \n")
+        return
     currentSession = findSessionById(message)
     currentSession.number_of_questions = int(message.text)
     currentSession.init_questions()
