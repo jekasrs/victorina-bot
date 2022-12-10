@@ -29,6 +29,9 @@ jobs:
         pip install pyrogram
         pip install asyncio
         pip install tgintegration
+    - name: Exec main
+      run: 
+        python main.py
         
   job_2: 
     name: UnitTest
