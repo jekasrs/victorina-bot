@@ -58,4 +58,4 @@ jobs:
         pip install tgintegration
     - name: Start execution
       run: 
-        python main.py& ; python integrationTest.py
+        python3 main.py & python3 integrationTest.py
